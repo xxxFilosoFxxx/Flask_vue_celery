@@ -22,10 +22,6 @@ export default createStore({
         connect: false
     },
     mutations: {
-        connect(state) {
-            localStorage.setItem('connect', 'true');
-            state.connect = true;
-        },
         initialiseStore(state) {
             if (localStorage.getItem('success_login')) {
                 state.username = localStorage.getItem('success_login');
@@ -33,7 +29,10 @@ export default createStore({
             if (localStorage.getItem('connect')) {
                 state.connect = localStorage.getItem('connect');
             }
-            console.log(state.connect)
+        },
+        initialiseConnect(state) {
+            localStorage.setItem('connect', 'true');
+            state.connect = true;
         },
         resetState(state) {
             state.currentTask = task;
@@ -65,6 +64,9 @@ export default createStore({
         // reloadTaskList(state) {}
     },
     actions: {
+        // connectSocket(context) {
+        //     context.commit('initialiseConnect');
+        // },
         sendTask(context, task_json) {
             axios.post('/api/send_task', task_json)
                 .then((response) => {

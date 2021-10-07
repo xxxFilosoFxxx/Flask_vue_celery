@@ -45,7 +45,7 @@ def logout():
 def socket_connect():
     print(f'Отправка сообщения на сервер от пользователя {current_user.username}!')
     join_room(current_user.username)
-    # emit('confirm', {'connection': data['yes']})
+    emit('confirm', {'msg': 'Соединение от сервера'}, room=current_user.username)
 
 
 @socketio.on('status')

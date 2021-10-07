@@ -81,7 +81,6 @@
 <script>
 import { ref } from 'vue'
 import { io } from 'socket.io-client'
-import { mapMutations } from 'vuex'
 
 export default {
   name: 'BasePage',
@@ -89,10 +88,9 @@ export default {
     username() {
       return this.$store.state.username;
     },
-    connected() {
+    connect() {
       return this.$store.state.connect;
-    },
-    ...mapMutations(['connect'])
+    }
   },
   setup() {
     const leftDrawerOpen = ref(false);
@@ -108,25 +106,46 @@ export default {
     onLogout() {
       this.$store.dispatch('onLogout');
       // io.in(this.username).leave();
-    }
+    },
   },
-  created() {
+  mounted() {
     let socket = io(`${location.origin}`);
 
-    socket.on('connect', function () {
-      socket.emit('join_room');
-      // TODO:
-      this.connect()
-    });
-    setInterval(function () {
-      if (this.connected) {
-        socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
-      }
-    }, 1000);
+    // setInterval(function () {
+    //     if (this.connected) {
+    //       socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
+    //     }
+    // }, 1000);
 
     socket.on('tasks', function (data) {
       console.log(data.tasks_user);
+      console.log('!');
     });
+  },
+  created() {
+    let socket = io(`${location.origin}`);
+    socket.on('connect', function () {
+      socket.emit('join_room');
+    });
+
+    socket.on('confirm', function (data) {
+      console.log(data.msg);
+      this.$store.commit('initialiseConnect');  // Uncaught TypeError: this.$store is undefined
+      // console.log(this.connect); -> undefined
+      // setInterval(this.loadStatusTasks, 1000, socket); -> не работает так
+      // clearInterval(myVar);
+    });
+
+    setInterval(function () {
+      socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
+      console.log(this.connect);
+      // if (!this.connected) {
+      //   clearInterval(status);
+      // }
+    }, 1000);
+    // socket.on('tasks', function (data) {
+    //   console.log(data.tasks_user);
+    // });
   },
   beforeCreate() {
     this.$store.commit('initialiseStore');
