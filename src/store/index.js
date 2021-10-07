@@ -18,19 +18,30 @@ export default createStore({
     state: {
         currentTask: task,
         tasksList: [],
-        username: ''
+        username: '',
+        connect: false
     },
     mutations: {
+        connect(state) {
+            localStorage.setItem('connect', 'true');
+            state.connect = true;
+        },
         initialiseStore(state) {
             if (localStorage.getItem('success_login')) {
                 state.username = localStorage.getItem('success_login');
             }
+            if (localStorage.getItem('connect')) {
+                state.connect = localStorage.getItem('connect');
+            }
+            console.log(state.connect)
         },
         resetState(state) {
             state.currentTask = task;
             state.tasksList = [];
             state.username = '';
+            state.connect = false;
             localStorage.removeItem('success_login');
+            localStorage.removeItem('connect');
         },
         setCurrentTask(state, value) {
             state.currentTask.id = value.id;
@@ -58,9 +69,8 @@ export default createStore({
             axios.post('/api/send_task', task_json)
                 .then((response) => {
                     let task = {id: response.data['task_id'], status: response.data.status};
-                    console.log(task);
-                    console.log(task.status);
                     context.commit('setCurrentTask', task);
+                    // console.log(this.state.currentTask);
                 })
                 .catch(function () {
                     alert('Ошибка при отправке задачи в очередь');

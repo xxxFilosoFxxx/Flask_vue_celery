@@ -56,10 +56,12 @@ def for_send_task(countdown: int = 5):
         radius = request.json.get('radius', None)
         delta = request.json.get('delta', None)
         username = request.json.get('username', None)
-        task = send_task.apply_async(args=[msisdn, radius, delta], countdown=countdown)
+
+        task = send_task.apply_async(args=[msisdn, radius, delta, username], countdown=countdown)
+
+        # op.send_status_task('status', task.state, username)
         op.send_task_progress(task.id, task.state, username)
-        print(f'Обработка данных пользователя {username}: {msisdn}, {radius}, {delta} через {countdown} секунд!')
-        # return jsonify({}), 202, {'location': url_for('task_status', task_id=task.id)}
+        # print(f'Обработка данных пользователя {username}: {msisdn}, {radius}, {delta} через {countdown} секунд!')
         return jsonify({'task_id': task.id, 'status': task.state}), 202
     except Exception:
         app.logger.exception(process_log_string(request))

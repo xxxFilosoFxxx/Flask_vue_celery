@@ -8,4 +8,4 @@ import quasarUserOptions from './quasar-user-options'
 createApp(App).use(Quasar, quasarUserOptions)
     .use(router)
     .use(store)
-    .mount('#app')
+    .mount('#app');

@@ -24,6 +24,7 @@ export PROJECT_ENV="prod"
 [Для запуска celery]
 celery -A backend.app.celery worker -l info
 
+
 [Если другой адрес для очереди задач]
   export CELERY_BROKER_URL="amqp://guest:guest@localhost:5672//" # Ваш url
   export RESULT_BACKEND="db+postgresql+psycopg2://test:test@localhost/tasks_docs" # Ваш url

@@ -1,6 +1,7 @@
 from backend.app import db
 from backend.models import Result, User
 from flask_login import login_user
+from flask_socketio import emit
 
 
 def session_commit() -> None:
@@ -41,25 +42,34 @@ def send_task_progress(uuid: str, status: str, username: str) -> None:
     session_commit()
 
 
-# TODO: ???
-def task_update_status(uuid: str, status: str):
+def task_update_attr(uuid: str, msisdn: float, radius: float, delta: float, status: str) -> None:
     task = Result.query.filter_by(uuid=uuid).first()
-    task.set_status(status)
-    db.session.add(task)
-    session_commit()
+    if task.status != status:
+        task.set_status(status)
+        task.set_attr(msisdn, radius, delta)
+        db.session.add(task)
+        session_commit()
 
 
-# def send_success_result_task(uuid: str, msisdn: float, radius: float, delta: float, user_id: int) -> Result:
-#     result_task = Result(uuid=uuid, msisdn=msisdn, radius=radius, delta=delta, user_id=user_id)
-#     db.session.add(result_task)
-#     session_commit()
-#     return result_task
+def task_update_status(uuid: str, status: str) -> None:
+    task = Result.query.filter_by(uuid=uuid).first()
+    if task.status != status:
+        task.set_status(status)
+        db.session.add(task)
+        session_commit()
+
+
+def get_user_tasks(username: str) -> dict:
+    user_id = User.query.filter_by(username=username).first().id
+    tasks = Result.query.filter_by(user_id=user_id).all()
+    all_user_task = {task.uuid: task.status for task in tasks}
+    return all_user_task
+
+
+# def send_status_task(event, response, room):
+#     emit(event, {'response': response}, namespace='/', room=room)
 
 
 # TODO: дописать
-def get_result_task():
-    pass
-
-
-def get_status_task():
+def get_user_task():
     pass

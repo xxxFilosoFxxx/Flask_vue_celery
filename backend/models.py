@@ -36,7 +36,7 @@ class Result(db.Model):
     msisdn = db.Column(db.Float, default=None)
     radius = db.Column(db.Float, default=None)
     delta = db.Column(db.Float, default=None)
-    status = db.Column(db.String(50), nullable=False)  # TODO: onupdate -> при смене статуса celery
+    status = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id, ondelete='CASCADE'), nullable=False)
 
     def __init__(self, uuid: str, status: str, user_id: int):

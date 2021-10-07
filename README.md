@@ -1,4 +1,4 @@
-# quasar_celery_process
+# Flask vue celery project
 
 ## Project setup
 ```

@@ -80,28 +80,53 @@
 
 <script>
 import { ref } from 'vue'
+import { io } from 'socket.io-client'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'BasePage',
   computed: {
     username() {
       return this.$store.state.username;
-    }
+    },
+    connected() {
+      return this.$store.state.connect;
+    },
+    ...mapMutations(['connect'])
   },
   setup() {
-    const leftDrawerOpen = ref(false)
+    const leftDrawerOpen = ref(false);
 
     return {
       leftDrawerOpen,
       toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
+        leftDrawerOpen.value = !leftDrawerOpen.value;
       }
     }
   },
   methods: {
     onLogout() {
       this.$store.dispatch('onLogout');
+      // io.in(this.username).leave();
     }
+  },
+  created() {
+    let socket = io(`${location.origin}`);
+
+    socket.on('connect', function () {
+      socket.emit('join_room');
+      // TODO:
+      this.connect()
+    });
+    setInterval(function () {
+      if (this.connected) {
+        socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
+      }
+    }, 1000);
+
+    socket.on('tasks', function (data) {
+      console.log(data.tasks_user);
+    });
   },
   beforeCreate() {
     this.$store.commit('initialiseStore');
