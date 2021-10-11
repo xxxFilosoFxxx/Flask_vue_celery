@@ -1,7 +1,6 @@
 from backend.app import db
 from backend.models import Result, User
 from flask_login import login_user
-from flask_socketio import emit
 
 
 def session_commit() -> None:

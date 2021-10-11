@@ -7,6 +7,19 @@ const routes = [
     name: 'Home',
     component: () => import("../views/Home.vue"),
     meta: {requiresAuth: true}
+    // children: [
+    //   {
+    //     path: ':uuid',
+    //     name: 'Task',
+    //     component: () => import("../views/Task.vue")
+    //   }
+    // ]
+  },
+  {
+    path: '/:uuid',
+    name: 'Task',
+    component: () => import("../views/Task.vue"),
+    meta: {requiresAuth: true}
   },
   {
     path: '/login',

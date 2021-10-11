@@ -26,30 +26,35 @@ export default createStore({
             if (localStorage.getItem('success_login')) {
                 state.username = localStorage.getItem('success_login');
             }
-            if (localStorage.getItem('connect')) {
-                state.connect = localStorage.getItem('connect');
-            }
+            // if (localStorage.getItem('connect')) {
+            //     state.connect = localStorage.getItem('connect');
+            // }
         },
-        initialiseConnect(state) {
-            localStorage.setItem('connect', 'true');
-            state.connect = true;
-        },
+        // initialiseConnect(state) {
+        //     // localStorage.setItem('connect', 'true');
+        //     state.connect = true;
+        // },
         resetState(state) {
             state.currentTask = task;
             state.tasksList = [];
             state.username = '';
             state.connect = false;
+            // socket.disconnect
             localStorage.removeItem('success_login');
-            localStorage.removeItem('connect');
+            // localStorage.removeItem('connect');
         },
         setCurrentTask(state, value) {
-            state.currentTask.id = value.id;
-            state.currentTask.status = value.status;
+            state.currentTask.id = value['task_id'];
+            state.currentTask.msisdn = value['task_result'].msisdn;
+            state.currentTask.radius = value['task_result'].radius;
+            state.currentTask.delta = value['task_result'].delta;
+            state.currentTask.status = value['state'];
         },
         updateCurrentTask(state, value) {
             state.currentTask.msisdn = value.msisdn;
             state.currentTask.radius = value.radius;
             state.currentTask.delta = value.delta;
+            state.currentTask.status = value.status;
         },
         setTasksList(state, value) {
             state.tasksList = value;
@@ -71,18 +76,28 @@ export default createStore({
             axios.post('/api/send_task', task_json)
                 .then((response) => {
                     let task = {id: response.data['task_id'], status: response.data.status};
-                    context.commit('setCurrentTask', task);
+                    // context.commit('setCurrentTask', task);
                     // console.log(this.state.currentTask);
+                    console.log(task);
                 })
                 .catch(function () {
                     alert('Ошибка при отправке задачи в очередь');
                 });
         },
-        // TODO: добавить маршрут обработки
-        loadTasks(context) {
-            axios.get('/load_tasks_status')
+        getTask(context, urlTask) {
+            axios.get('/status/' + urlTask)
                 .then((response) => {
-                    context.commit('setTasksList', response.data['tasks_status']);
+                    context.commit('setCurrentTask', response.data);
+                    router.push({ path: `/${urlTask}`});
+                })
+                .catch(function () {
+                    alert('Ошибка при загрузке задачи');
+                });
+        },
+        loadTasks(context) {
+            axios.get('/status_tasks')
+                .then((response) => {
+                    context.commit('setTasksList', response.data['tasks']);
                 })
                 .catch(function () {
                     alert('Ошибка при загрузке статуса задач');

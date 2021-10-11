@@ -2,7 +2,7 @@ import logging
 import os
 
 from flask import Flask
-from flask_socketio import SocketIO
+# from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from logging.handlers import RotatingFileHandler
@@ -15,7 +15,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 log_handler = RotatingFileHandler(app.config['LOG_PATH'], maxBytes=10 * 1024 * 1024, backupCount=3)
 log_handler.setLevel(logging.ERROR)
 app.logger.addHandler(log_handler)
-socketio = SocketIO(app, message_queue=app.config['CELERY_BROKER_URL'])
+# socketio = SocketIO(app, message_queue=app.config['CELERY_BROKER_URL'])
 
 db = SQLAlchemy(app)
 login = LoginManager(app)

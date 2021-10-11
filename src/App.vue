@@ -35,7 +35,6 @@
         :breakpoint="700"
         bordered
         class="bg-indigo-10 text-white">
-<!--      // TODO: прописать ссылки к выпадающим задачам-->
       <q-scroll-area class="fit">
         <q-list padding class="menu-list" >
           <q-item clickable v-ripple to="/" active-class="text-orange">
@@ -60,9 +59,22 @@
 
           <q-separator dark/>
 
-          <q-item clickable v-ripple v-for="n in 5" :key="n">
-            <q-item-section>`Здесь появляется задача`</q-item-section>
+          <q-item clickable v-ripple @click="loadTasks()" active-class="text-orange">
             <q-item-section avatar>
+              <q-icon name="assignment" />
+            </q-item-section>
+
+            <q-item-section>
+              Обновить список задач
+            </q-item-section>
+          </q-item>
+
+          <q-separator dark/>
+
+          <q-item clickable v-ripple v-for="(i, task) in filteredTasksList" :key="i">
+            <q-item-section @click="goToTask(task)">{{ task }}</q-item-section>
+            <q-item-section avatar>
+              {{ i }}
               <q-avatar color="positive"></q-avatar>
             </q-item-section>
           </q-item>
@@ -80,7 +92,6 @@
 
 <script>
 import { ref } from 'vue'
-import { io } from 'socket.io-client'
 
 export default {
   name: 'BasePage',
@@ -88,8 +99,10 @@ export default {
     username() {
       return this.$store.state.username;
     },
-    connect() {
-      return this.$store.state.connect;
+    filteredTasksList() {
+        // if (this.searchText === "") return this.$store.state.operList
+        // else return this.$store.state.operList.filter(oper => oper.fio.toLowerCase().startsWith(this.searchText))
+      return this.$store.state.tasksList;
     }
   },
   setup() {
@@ -105,48 +118,69 @@ export default {
   methods: {
     onLogout() {
       this.$store.dispatch('onLogout');
-      // io.in(this.username).leave();
     },
+    loadTasks() {
+      this.$store.dispatch('loadTasks');
+    },
+    goToTask(urlTask) {
+      this.$store.dispatch('getTask', urlTask);
+      // let uuid = this.$store.state.currentTask.id;
+      // this.$route.push({ path: `/${urlTask}` });
+    }
   },
-  mounted() {
-    let socket = io(`${location.origin}`);
-
-    // setInterval(function () {
-    //     if (this.connected) {
-    //       socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
-    //     }
-    // }, 1000);
-
-    socket.on('tasks', function (data) {
-      console.log(data.tasks_user);
-      console.log('!');
-    });
-  },
-  created() {
-    let socket = io(`${location.origin}`);
-    socket.on('connect', function () {
-      socket.emit('join_room');
-    });
-
-    socket.on('confirm', function (data) {
-      console.log(data.msg);
-      this.$store.commit('initialiseConnect');  // Uncaught TypeError: this.$store is undefined
-      // console.log(this.connect); -> undefined
-      // setInterval(this.loadStatusTasks, 1000, socket); -> не работает так
-      // clearInterval(myVar);
-    });
-
-    setInterval(function () {
-      socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
-      console.log(this.connect);
-      // if (!this.connected) {
-      //   clearInterval(status);
-      // }
-    }, 1000);
-    // socket.on('tasks', function (data) {
-    //   console.log(data.tasks_user);
-    // });
-  },
+  // sockets: {
+  //   connect: function () {
+  //       console.log('socket connected');
+  //       this.$socket.emit('join_room');
+  //   },
+  //   disconnect() {
+  //     console.log('socket disconnected');
+  //   },
+  //   confirm: function (data) {
+  //     console.log(data.msg);
+  //     this.$store.commit('initialiseConnect');
+  //     console.log(this.connect);
+  //   }
+  // },
+  // mounted() {
+  //   let socket = io(`${location.origin}`);
+  //
+  //   // setInterval(function () {
+  //   //     if (this.connected) {
+  //   //       socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
+  //   //     }
+  //   // }, 1000);
+  //
+  //   socket.on('tasks', function (data) {
+  //     console.log(data.tasks_user);
+  //     console.log('!');
+  //   });
+  // },
+  // created() {
+  //   let socket = io(`${location.origin}`);
+  //   socket.on('connect', function () {
+  //     socket.emit('join_room');
+  //   });
+  //
+  //   socket.on('confirm', function (data) {
+  //     console.log(data.msg);
+  //     this.$store.commit('initialiseConnect');  // Uncaught TypeError: this.$store is undefined
+  //     // console.log(this.connect); -> undefined
+  //     // setInterval(this.loadStatusTasks, 1000, socket); -> не работает так
+  //     // clearInterval(myVar);
+  //   });
+  //
+  //   setInterval(function () {
+  //     socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
+  //     console.log(this.connect);
+  //     // if (!this.connected) {
+  //     //   clearInterval(status);
+  //     // }
+  //   }, 1000);
+  //   // socket.on('tasks', function (data) {
+  //   //   console.log(data.tasks_user);
+  //   // });
+  // },
   beforeCreate() {
     this.$store.commit('initialiseStore');
   }
