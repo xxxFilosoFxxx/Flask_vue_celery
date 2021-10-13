@@ -85,10 +85,10 @@ export default createStore({
                 });
         },
         getTask(context, urlTask) {
-            axios.get('/status/' + urlTask)
+            axios.get('/status_task/' + urlTask)
                 .then((response) => {
                     context.commit('setCurrentTask', response.data);
-                    router.push({ path: `/${urlTask}`});
+                    router.push({ path: `/status/${urlTask}`});
                 })
                 .catch(function () {
                     alert('Ошибка при загрузке задачи');

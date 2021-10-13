@@ -7,16 +7,9 @@ const routes = [
     name: 'Home',
     component: () => import("../views/Home.vue"),
     meta: {requiresAuth: true}
-    // children: [
-    //   {
-    //     path: ':uuid',
-    //     name: 'Task',
-    //     component: () => import("../views/Task.vue")
-    //   }
-    // ]
   },
   {
-    path: '/:uuid',
+    path: '/status/:uuid',
     name: 'Task',
     component: () => import("../views/Task.vue"),
     meta: {requiresAuth: true}

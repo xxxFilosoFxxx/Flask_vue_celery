@@ -1,6 +1,6 @@
 <template>
     <div>
-        <get-tasks :task="$store.state.currentTask"></get-tasks>
+        <get-tasks></get-tasks>
     </div>
 </template>
 
@@ -12,6 +12,15 @@ export default {
     components: {
         GetTasks
     }
+    // created() {
+    //     this.$watch(
+    //         () => this.$route.params,
+    //         () => {
+    //             this.currentTask
+    //         },
+    //         { immediate: true }
+    //     )
+    // }
 }
 </script>
 

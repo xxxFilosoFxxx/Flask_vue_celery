@@ -83,7 +83,7 @@ def tasks_status():
 
 
 # Результаты и сами данные в RabbitMQ не сохраняются
-@app.route('/status/<task_id>', methods=['GET'])
+@app.route('/status_task/<task_id>', methods=['GET'])
 @login_required
 def task_status(task_id):
     try:

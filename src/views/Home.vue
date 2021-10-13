@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <InputParameters/>
+    <input-parameters/>
   </div>
 </template>
 
