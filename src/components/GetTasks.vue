@@ -16,22 +16,21 @@ export default {
   data() {
     return {
       columns: [{
-          name: 'id',
-          required: true,
-          label: 'Id Задачи',
-          align: 'left',
-          field: row => row.id,
-          format: val => `${val}`,
-          sortable: true
+        name: 'id',
+        required: true,
+        label: 'Id Задачи',
+        align: 'left',
+        field: row => row.id,
+        format: val => `${val}`
         },
-        { name: 'msisdn', align: 'center', label: 'Msisdn', field: 'msisdn', sortable: true },
-        { name: 'radius', label: 'Radius', field: 'radius', sortable: true },
-        { name: 'delta', label: 'Delta', field: 'delta', sortable: true },
+        { name: 'msisdn', align: 'center', label: 'Msisdn', field: 'msisdn'},
+        { name: 'radius', label: 'Radius', field: 'radius'},
+        { name: 'delta', label: 'Delta', field: 'delta'},
         { name: 'status', label: 'Status', field: 'status'}
       ],
       rows: [this.$store.state.currentTask]
     }
-  },
+  }
 }
 </script>
 <style scoped>

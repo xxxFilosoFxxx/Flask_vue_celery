@@ -1,3 +1,5 @@
+from typing import List, Dict, Any
+
 from backend.app import db
 from backend.models import Result, User
 from flask_login import login_user
@@ -58,17 +60,25 @@ def task_update_status(uuid: str, status: str) -> None:
         session_commit()
 
 
-def get_user_tasks(username: str) -> dict:
+def get_tasks_status(username: str) -> dict:
     user_id = User.query.filter_by(username=username).first().id
     tasks = Result.query.filter_by(user_id=user_id).all()
     all_user_task = {task.uuid: task.status for task in tasks}
     return all_user_task
 
 
-# def send_status_task(event, response, room):
-#     emit(event, {'response': response}, namespace='/', room=room)
+def serialize_query(query):
+    return {
+        'uuid': query.uuid,
+        'msisdn': query.msisdn,
+        'radius': query.radius,
+        'delta': query.delta,
+        'status': query.status
+    }
 
 
-# TODO: дописать
-def get_user_task():
-    pass
+def get_user_tasks(username: str) -> List[Dict[str, Any]]:
+    user_id = User.query.filter_by(username=username).first().id
+    tasks = Result.query.filter_by(user_id=user_id).all()
+    query = [serialize_query(task) for task in tasks]
+    return query

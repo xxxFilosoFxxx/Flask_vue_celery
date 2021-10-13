@@ -18,30 +18,22 @@ export default createStore({
     state: {
         currentTask: task,
         tasksList: [],
-        username: '',
-        connect: false
+        allTasksList: [],
+        username: ''
     },
     mutations: {
         initialiseStore(state) {
             if (localStorage.getItem('success_login')) {
                 state.username = localStorage.getItem('success_login');
             }
-            // if (localStorage.getItem('connect')) {
-            //     state.connect = localStorage.getItem('connect');
-            // }
         },
-        // initialiseConnect(state) {
-        //     // localStorage.setItem('connect', 'true');
-        //     state.connect = true;
-        // },
         resetState(state) {
             state.currentTask = task;
             state.tasksList = [];
+            state.allTasksList = [];
             state.username = '';
             state.connect = false;
-            // socket.disconnect
             localStorage.removeItem('success_login');
-            // localStorage.removeItem('connect');
         },
         setCurrentTask(state, value) {
             state.currentTask.id = value['task_id'];
@@ -59,6 +51,9 @@ export default createStore({
         setTasksList(state, value) {
             state.tasksList = value;
         },
+        setAllTasksList(state, value) {
+            state.allTasksList = value;
+        },
         setUsername(state, value) {
             localStorage.setItem('success_login', value);
             state.username = value;
@@ -69,15 +64,10 @@ export default createStore({
         // reloadTaskList(state) {}
     },
     actions: {
-        // connectSocket(context) {
-        //     context.commit('initialiseConnect');
-        // },
         sendTask(context, task_json) {
             axios.post('/api/send_task', task_json)
                 .then((response) => {
                     let task = {id: response.data['task_id'], status: response.data.status};
-                    // context.commit('setCurrentTask', task);
-                    // console.log(this.state.currentTask);
                     console.log(task);
                 })
                 .catch(function () {
@@ -85,13 +75,23 @@ export default createStore({
                 });
         },
         getTask(context, urlTask) {
-            axios.get('/status_task/' + urlTask)
+            axios.get('/result_task/' + urlTask)
                 .then((response) => {
                     context.commit('setCurrentTask', response.data);
                     router.push({ path: `/status/${urlTask}`});
                 })
                 .catch(function () {
                     alert('Ошибка при загрузке задачи');
+                });
+        },
+        getTasks(context) {
+            axios.get('/all_result_tasks')
+                .then((response) => {
+                    context.commit('setAllTasksList', response.data);
+                    // router.push({ path: '/all_tasks'});
+                })
+                .catch(function () {
+                    alert('Ошибка при загрузке задач');
                 });
         },
         loadTasks(context) {
@@ -108,7 +108,6 @@ export default createStore({
                 .then((response) => {
                     alert(response.data.message);
                     context.commit('setUsername', response.data.username);
-                    // context.commit('successLoginUser');
                     router.push(response.data.path);
                 })
                 .catch(function () {

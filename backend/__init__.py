@@ -1,7 +1,6 @@
 from flask import render_template, jsonify, request, session
 from flask_login import login_required, logout_user, current_user
-# from flask_socketio import join_room, leave_room, close_room, emit
-from backend.app import app  #, socketio
+from backend.app import app
 from backend.utils import operations_utils as op
 from backend.utils.common_utils import process_log_string
 from backend.celery_tasks import send_task
@@ -31,8 +30,6 @@ def catch_all(path):
 @login_required
 def logout():
     try:
-        # leave_room(room=current_user.username, sid=request.sid, namespace='/')
-        # close_room(room=current_user.username, namespace='/')
         logout_user()
         return jsonify({'message': 'Вы успешно вышли из системы', 'path': '/login'})
     except Exception:
@@ -40,52 +37,37 @@ def logout():
         raise
 
 
-# @socketio.on('join_room')
-# @login_required
-# def socket_connect():
-#     print(f'Отправка сообщения на сервер от пользователя {current_user.username}!')
-#     join_room(current_user.username)
-#     emit('confirm', {'msg': 'Соединение от сервера'}, room=current_user.username)
-#
-#
-# @socketio.on('status')
-# @login_required
-# def socket_send_tasks(data):
-#     print(data['message'])
-#     emit('tasks', {'tasks_user': op.get_user_tasks(current_user.username)}, room=current_user.username)
-
-
 @app.route('/status_tasks', methods=['GET'])
-# @login_required
-def tasks_status():
+@login_required
+def status_tasks():
     try:
+        response = {
+            'tasks': op.get_tasks_status(current_user.username)
+        }
+        return jsonify(response), 200
+    except Exception:
+        app.logger.exception(process_log_string(request))
+        raise
+
+
+@app.route('/all_result_tasks', methods=['GET'])
+@login_required
+def all_result_tasks():
+    try:
+        response = op.get_user_tasks(current_user.username)
         # response = {
         #     'tasks': op.get_user_tasks(current_user.username)
         # }
-        # return jsonify(response), 200
-        if current_user.is_authenticated:
-            response = {
-                'tasks': op.get_user_tasks(current_user.username)
-            }
-            return jsonify(response), 200
-        else:
-            response = {
-                'tasks': {
-                    'wfageshrdw': 'OK',
-                    'fwfga24214': 'OK',
-                    'fwafgafwaa': 'OK'
-                }
-            }
-            return jsonify(response)
+        return jsonify(response), 200
     except Exception:
         app.logger.exception(process_log_string(request))
         raise
 
 
 # Результаты и сами данные в RabbitMQ не сохраняются
-@app.route('/status_task/<task_id>', methods=['GET'])
+@app.route('/result_task/<task_id>', methods=['GET'])
 @login_required
-def task_status(task_id):
+def result_task(task_id):
     try:
         task = send_task.AsyncResult(task_id)
         if task.state == 'PENDING':  # Цвет -> Желтый

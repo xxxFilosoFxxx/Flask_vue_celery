@@ -10,17 +10,8 @@ import GetTasks from "@/components/GetTasks";
 export default {
     name: "Task",
     components: {
-        GetTasks
+      GetTasks
     }
-    // created() {
-    //     this.$watch(
-    //         () => this.$route.params,
-    //         () => {
-    //             this.currentTask
-    //         },
-    //         { immediate: true }
-    //     )
-    // }
 }
 </script>
 

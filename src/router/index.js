@@ -6,7 +6,13 @@ const routes = [
     path: '/',
     name: 'Home',
     component: () => import("../views/Home.vue"),
-    meta: {requiresAuth: true}
+    meta: {requiresAuth: true},
+  },
+  {
+    path: '/all_tasks',
+    name: 'AllTasks',
+    component: () => import('../views/AllTasks.vue'),
+    meta: {requiresAuth: true},
   },
   {
     path: '/status/:uuid',
@@ -23,11 +29,6 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: () => import("../views/Register.vue")
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
     path: '/:noPage(.*)*',

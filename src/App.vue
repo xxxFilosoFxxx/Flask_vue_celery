@@ -47,7 +47,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item clickable v-ripple to="/about" active-class="text-orange">
+          <q-item clickable v-ripple @click.prevent="goToTasks()" to="/all_tasks" active-class="text-orange">
             <q-item-section avatar>
               <q-icon name="star" />
             </q-item-section>
@@ -100,8 +100,6 @@ export default {
       return this.$store.state.username;
     },
     filteredTasksList() {
-        // if (this.searchText === "") return this.$store.state.operList
-        // else return this.$store.state.operList.filter(oper => oper.fio.toLowerCase().startsWith(this.searchText))
       return this.$store.state.tasksList;
     }
   },
@@ -122,65 +120,13 @@ export default {
     loadTasks() {
       this.$store.dispatch('loadTasks');
     },
+    goToTasks() {
+      this.$store.dispatch('getTasks');
+    },
     goToTask(urlTask) {
       this.$store.dispatch('getTask', urlTask);
-      // let uuid = this.$store.state.currentTask.id;
-      // this.$route.push({ path: `/${urlTask}` });
     }
   },
-  // sockets: {
-  //   connect: function () {
-  //       console.log('socket connected');
-  //       this.$socket.emit('join_room');
-  //   },
-  //   disconnect() {
-  //     console.log('socket disconnected');
-  //   },
-  //   confirm: function (data) {
-  //     console.log(data.msg);
-  //     this.$store.commit('initialiseConnect');
-  //     console.log(this.connect);
-  //   }
-  // },
-  // mounted() {
-  //   let socket = io(`${location.origin}`);
-  //
-  //   // setInterval(function () {
-  //   //     if (this.connected) {
-  //   //       socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
-  //   //     }
-  //   // }, 1000);
-  //
-  //   socket.on('tasks', function (data) {
-  //     console.log(data.tasks_user);
-  //     console.log('!');
-  //   });
-  // },
-  // created() {
-  //   let socket = io(`${location.origin}`);
-  //   socket.on('connect', function () {
-  //     socket.emit('join_room');
-  //   });
-  //
-  //   socket.on('confirm', function (data) {
-  //     console.log(data.msg);
-  //     this.$store.commit('initialiseConnect');  // Uncaught TypeError: this.$store is undefined
-  //     // console.log(this.connect); -> undefined
-  //     // setInterval(this.loadStatusTasks, 1000, socket); -> не работает так
-  //     // clearInterval(myVar);
-  //   });
-  //
-  //   setInterval(function () {
-  //     socket.emit('status', {message: 'Отправка задач пользователя и обновление статуса'});
-  //     console.log(this.connect);
-  //     // if (!this.connected) {
-  //     //   clearInterval(status);
-  //     // }
-  //   }, 1000);
-  //   // socket.on('tasks', function (data) {
-  //   //   console.log(data.tasks_user);
-  //   // });
-  // },
   beforeCreate() {
     this.$store.commit('initialiseStore');
   }
