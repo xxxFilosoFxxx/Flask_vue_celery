@@ -4,7 +4,7 @@
       title="Задачи"
       :rows="rows"
       :columns="columns"
-      row-key="uuid"
+      row-key="task_id"
     />
   </div>
 </template>
@@ -15,11 +15,11 @@ export default {
   data() {
     return {
       columns: [{
-        name: 'uuid',
+        name: 'task_id',
         required: true,
         label: 'Id Задачи',
         align: 'left',
-        field: row => row['uuid'],
+        field: row => row['task_id'],
         format: val => `${val}`,
         sortable: true
         },

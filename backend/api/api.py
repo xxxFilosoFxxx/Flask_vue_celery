@@ -57,10 +57,8 @@ def for_send_task(countdown: int = 5):
         delta = request.json.get('delta', None)
         username = request.json.get('username', None)
 
-        task = send_task.apply_async(args=[msisdn, radius, delta, username], countdown=countdown)
-
-        # op.send_status_task('status', task.state, username)
-        op.send_task_progress(task.id, task.state, username)
+        task = send_task.apply_async(args=[msisdn, radius, delta], countdown=countdown)
+        op.send_task_progress(task.id, username)
         # print(f'Обработка данных пользователя {username}: {msisdn}, {radius}, {delta} через {countdown} секунд!')
         return jsonify({'task_id': task.id, 'status': task.state}), 202
     except Exception:

@@ -1,23 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store/index';
+import AllTasks from "../views/AllTasks.vue";
+import Task from "../views/Task.vue";
+import Home from "../views/Home.vue";
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import("../views/Home.vue"),
+    component: Home,
     meta: {requiresAuth: true},
   },
   {
     path: '/all_tasks',
     name: 'AllTasks',
-    component: () => import('../views/AllTasks.vue'),
+    component: AllTasks,
     meta: {requiresAuth: true},
   },
   {
     path: '/status/:uuid',
     name: 'Task',
-    component: () => import("../views/Task.vue"),
+    component: Task,
     meta: {requiresAuth: true}
   },
   {

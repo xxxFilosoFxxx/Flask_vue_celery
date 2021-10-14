@@ -1,7 +1,6 @@
-from typing import List, Dict, Any
-
+# from typing import List, Dict, Any
 from backend.app import db
-from backend.models import Result, User
+from backend.models import UserTasks, User
 from flask_login import login_user
 
 
@@ -36,49 +35,38 @@ def check_login_user(username: str, remember: bool) -> None:
     login_user(user, remember=remember)
 
 
-def send_task_progress(uuid: str, status: str, username: str) -> None:
+def send_task_progress(uuid: str, username: str) -> None:
     user_id = User.query.filter_by(username=username).first().id
-    task = Result(uuid=uuid, status=status, user_id=user_id)
+    task = UserTasks(uuid=uuid, user_id=user_id)
     db.session.add(task)
     session_commit()
 
 
-def task_update_attr(uuid: str, msisdn: float, radius: float, delta: float, status: str) -> None:
-    task = Result.query.filter_by(uuid=uuid).first()
-    if task.status != status:
-        task.set_status(status)
-        task.set_attr(msisdn, radius, delta)
-        db.session.add(task)
-        session_commit()
+# def serialize_query(query):
+#     return {
+#         'task_id': query.task_id,
+#         'result': query.result.tobytes().decode('utf-8', errors='ignore').replace(
+#             '\x05C\x00\x00\x00\x00\x00\x00\x00?', ''),
+#         'status': query.status
+#     }
 
 
-def task_update_status(uuid: str, status: str) -> None:
-    task = Result.query.filter_by(uuid=uuid).first()
-    if task.status != status:
-        task.set_status(status)
-        db.session.add(task)
-        session_commit()
+def get_user_tasks(username: str) -> list:  # List[Dict[str, Any]]
+    user_id = User.query.filter_by(username=username).first().id
+    tasks = UserTasks.query.filter_by(user_id=user_id).all()
+    tasks_id = [i.uuid for i in tasks]
+    # query = [serialize_query(task) for task in db.engine.execute('select * from celery_taskmeta order by date_done')
+    #          if task.task_id in tasks_id]
+    # return query
+    return tasks_id
 
 
 def get_tasks_status(username: str) -> dict:
     user_id = User.query.filter_by(username=username).first().id
-    tasks = Result.query.filter_by(user_id=user_id).all()
+    tasks = UserTasks.query.filter_by(user_id=user_id).all()
     all_user_task = {task.uuid: task.status for task in tasks}
+    # all_user_task = {}
+    # for i in tasks:
+    #     all_user_task[i.uuid] = db.engine.execute('select status from celery_taskmeta where task_id like %s',
+    #                                               i.uuid).fetchone()[0]
     return all_user_task
-
-
-def serialize_query(query):
-    return {
-        'uuid': query.uuid,
-        'msisdn': query.msisdn,
-        'radius': query.radius,
-        'delta': query.delta,
-        'status': query.status
-    }
-
-
-def get_user_tasks(username: str) -> List[Dict[str, Any]]:
-    user_id = User.query.filter_by(username=username).first().id
-    tasks = Result.query.filter_by(user_id=user_id).all()
-    query = [serialize_query(task) for task in tasks]
-    return query

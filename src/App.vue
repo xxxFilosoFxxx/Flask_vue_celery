@@ -47,7 +47,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item clickable v-ripple @click.prevent="goToTasks()" to="/all_tasks" active-class="text-orange">
+          <q-item clickable v-ripple @click="goToTasks()" to="/all_tasks" active-class="text-orange">
             <q-item-section avatar>
               <q-icon name="star" />
             </q-item-section>
@@ -74,8 +74,10 @@
           <q-item clickable v-ripple v-for="(i, task) in filteredTasksList" :key="i">
             <q-item-section @click="goToTask(task)">{{ task }}</q-item-section>
             <q-item-section avatar>
-              {{ i }}
-              <q-avatar color="positive"></q-avatar>
+              <q-avatar v-if="i === 'SUCCESS'" :color="colors.positive"></q-avatar>
+              <q-avatar v-else-if="i === 'PROGRESS'" :color="colors.warning"></q-avatar>
+              <q-avatar v-else-if="i === 'PENDING'" :color="colors.info"></q-avatar>
+              <q-avatar v-else :color="colors.negative"></q-avatar>
             </q-item-section>
           </q-item>
 
@@ -95,6 +97,16 @@ import { ref } from 'vue'
 
 export default {
   name: 'BasePage',
+  data() {
+    return {
+      colors: {
+        positive: 'positive',
+        warning: 'warning',
+        info: 'info',
+        negative: 'negative'
+      }
+    }
+  },
   computed: {
     username() {
       return this.$store.state.username;

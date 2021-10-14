@@ -56,9 +56,6 @@ export default {
     submitLogin() {
       let login_json = {login: this.login, password: this.password};
       this.$store.dispatch('sendLogin', login_json);
-      // .then(() => {
-      //   this.$router.push('/');
-      // });
     },
     onReset() {
       this.login = null;
